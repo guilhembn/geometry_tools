@@ -1,0 +1,27 @@
+name: Ubuntu 20.04 x86_64 Build and Test
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ubuntu-20.04
+        steps:
+            - name: Workspace directories creation
+              run: mkdir lib && mkdir include && mkdir src                
+            - uses: actions/checkout@v2
+              with:
+                  repository: rustyducks/geometry_tools
+                  path: src/geometry_tools
+            - name: Install dependencies
+              run: sudo apt-get update && sudo apt-get install -y libeigen3-dev
+            - name: Build dir creation
+              run: mkdir src/geometry_tools/build
+            - name: CMake configure
+              working-directory: src/geometry_tools/build
+              run: cmake -DENABLE_TESTS=ON -DCMAKE_INSTALL_PREFIX=$GITHUB_WORKSPACE ..
+            - name: make
+              working-directory: src/geometry_tools/build
+              run: make -j4
+            - name: install
+              working-directory: src/geometry_tools/build
+              run: make install
