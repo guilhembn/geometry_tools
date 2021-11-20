@@ -15,7 +15,7 @@ endif()
 project(GeometryTools VERSION 0.1.0)
 
 add_compile_options(-Wall -Wextra -pedantic -Werror)
-set (CMAKE_CXX_STANDARD 11)
+set (CMAKE_CXX_STANDARD 14)
 
 include(GNUInstallDirs)
 

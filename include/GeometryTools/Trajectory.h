@@ -60,7 +60,7 @@ class Path {
   const PointOriented at(size_t i) const;
   size_t size() const { return points_.size(); }
 
-  Trajectory computeSpeeds() const;
+  Trajectory computeSpeeds(const double maxLinearSpeed, const double maxRotationalSpeed, const double maxCentripetalAcceleration, const double maxLinearAcceleration) const;
 
  protected:
   std::deque<PointOriented> points_;

@@ -170,7 +170,7 @@ double Path::mengerCurvature(const size_t i, const double distance) const {
 
 const PointOriented Path::at(size_t i) const { return points_.at(i); }
 
-Trajectory Path::computeSpeeds() const {
+Trajectory Path::computeSpeeds(const double maxLinearSpeed, const double maxRotationalSpeed, const double maxCentripetalAcceleration, const double maxLinearAcceleration) const {
   std::vector<double> speeds(points_.size(), 0.);
   if (points_.size() < 2) {
     return Trajectory(*this, speeds);
@@ -180,12 +180,12 @@ Trajectory Path::computeSpeeds() const {
   for (size_t i = 1; i < points_.size() - 1; i++) {
     const double curvature = mengerCurvature(i, 20.);
     if (curvature < 0.01) {
-      speeds.at(i) = 150.;  // Trajectory is straight, full speed
+      speeds.at(i) = maxLinearSpeed;  // Trajectory is straight, full speed
     } else {
-      double centripetalAccMaxSpeed = std::sqrt(50. / curvature);  // Centripetal acceleration = v**2 * curvature
-      double maxRotSpeed = 1.8 / curvature;                        // maxRotSpeed / curvature = vx  (vtheta = vx * c)
+      double centripetalAccMaxSpeed = std::sqrt(maxCentripetalAcceleration / curvature);  // Centripetal acceleration = v**2 * curvature
+      double maxRotSpeed = maxRotationalSpeed / curvature;                        // maxRotSpeed / curvature = vx  (vtheta = vx * c)
       double minSpeed = std::min(maxRotSpeed, centripetalAccMaxSpeed);
-      speeds.at(i) = std::min(150., std::max(0., minSpeed));
+      speeds.at(i) = std::min(maxLinearSpeed, std::max(0., minSpeed));
     }
   }
 
@@ -194,7 +194,7 @@ Trajectory Path::computeSpeeds() const {
     const PointOriented &next = points_.at(i + 1);
     const PointOriented &current = points_.at(i);
     const double dist = current.distanceTo(next);
-    const double maxSpeedAtMaxDecel = std::sqrt(speeds.at(i + 1) * speeds.at(i + 1) + 2. * 50. * dist);  // sqrt(v0**2 + 2 * maxAcc * distToTravel)
+    const double maxSpeedAtMaxDecel = std::sqrt(speeds.at(i + 1) * speeds.at(i + 1) + 2. * maxLinearAcceleration * dist);  // sqrt(v0**2 + 2 * maxAcc * distToTravel)
     speeds.at(i) = std::min(speeds.at(i), maxSpeedAtMaxDecel);
     // Speed is min between max speed due to traj angle and max possible speed to be at the next point at the right speed
   }
