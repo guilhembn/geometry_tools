@@ -20,6 +20,14 @@ class Speed {
     return os;
   };
 
+  virtual Speed &operator*=(const double s);
+  virtual Speed operator*(const double s);
+  virtual Speed &operator+=(const Speed &rhs);
+  virtual Speed operator+(const Speed &rhs) const;
+  virtual Speed operator-() const;
+  virtual Speed &operator-=(const Speed &rhs);
+  virtual Speed operator-(const Speed &rhs) const;
+
  protected:
   Eigen::Vector2d linearSpeed_;
   double rotationalSpeed_;
