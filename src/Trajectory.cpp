@@ -83,6 +83,7 @@ Point Path::pointAtDistanceFrom(const double distance, const Point &pointStart, 
     t = 0.;
     browsingTraj += 1;
     distanceLeft -= pathLen;
+    if (browsingTraj == points_.size() - 2) break;
     pathLen = (points_.at(browsingTraj + 1) - points_.at(browsingTraj)).norm();
   }
   Point ab = points_.at(browsingTraj + 1) - points_.at(browsingTraj);
@@ -101,8 +102,9 @@ Point Path::pointAtBackwardDistanceFrom(const double distance, const Point &poin
   size_t browsingTraj = previousIndex;
   while (distanceLeft > pathLen) {  // while the distance left is greater than the length of a full segment
     t = 1.;
-    browsingTraj -= 1;
     distanceLeft -= pathLen;
+    if (browsingTraj == 0) break;
+    browsingTraj -= 1;
     pathLen = (points_.at(browsingTraj + 1) - points_.at(browsingTraj)).norm();
   }
   Point ab = points_.at(browsingTraj + 1) - points_.at(browsingTraj);
@@ -214,12 +216,12 @@ Trajectory::Trajectory(const Path &path, const std::vector<double> &speeds) : Pa
 
 const PointOrientedSpeed Trajectory::at(size_t i) const { return PointOrientedSpeed(points_.at(i), speeds_.at(i)); }
 
-Point Trajectory::pointWithSpeedClosestTo(const Point &point, double &tOut, size_t &closestPrevIndex) const {
+Point Trajectory::pointWithSpeedClosestTo(const Point &point, double &tOut, size_t &closestPrevIndex, const size_t minIndex, const size_t maxIndex) const {
   double distMin = std::numeric_limits<double>::max();
   double tMin = 0.;
   size_t iMin = -1;
   Point pointMin;
-  for (size_t i = 0; i < size() - 1; i++) {
+  for (size_t i = minIndex; i < std::min(maxIndex, size() - 2); i++) {
     double t;
     Point pt = point.closestPointBetween(points_.at(i), points_.at(i + 1), t);
     double dist = pt.squaredDistanceTo(point);
@@ -238,10 +240,10 @@ Point Trajectory::pointWithSpeedClosestTo(const Point &point, double &tOut, size
   return pointMin;
 }
 
-Point Trajectory::pointWithSpeedAtDistanceFrom(const double distance, const Point &pointStart, size_t &previousClosestIndex) const {
+Point Trajectory::pointWithSpeedAtDistanceFrom(const double distance, const Point &pointStart, size_t &previousClosestIndex, const size_t minIndex, const size_t maxIndex) const {
   double t;
   size_t previousIndex;
-  Point proj = pointWithSpeedClosestTo(pointStart, t, previousIndex);
+  Point proj = pointWithSpeedClosestTo(pointStart, t, previousIndex, minIndex, maxIndex);
 
   double distanceLeft = distance;
   double pathLen = points_.at(previousIndex + 1).distanceTo(proj);

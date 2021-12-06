@@ -82,7 +82,7 @@ class Trajectory : public Path {
    * @return Point The closest point on the trajectory.
    * (Point = traj.at(closestPrevIndex) + tOut * (traj.at(closestPrevIndex + 1) - traj.at(closestPrevIndex)))
    */
-  Point pointWithSpeedClosestTo(const Point &point, double &tOut, size_t &closestPrevIndex) const;
+  Point pointWithSpeedClosestTo(const Point &point, double &tOut, size_t &closestPrevIndex, const size_t minIndex = 0, const size_t maxIndex = std::numeric_limits<size_t>::max()) const;
 
   /**
    * @brief Finds the point along the trajectory at 'distance' from 'pointStart'. First finds the closest point on the trajectory,
@@ -92,7 +92,7 @@ class Trajectory : public Path {
    * @param pointStart the starting point (will be projected on the trajectory)
    * @return Point the point on the trajectory at a distance from the projection of pointStart on the trajectory, along with an interpolated speed
    */
-  Point pointWithSpeedAtDistanceFrom(const double distance, const Point &pointStart, size_t &previousClosestIndex) const;
+  Point pointWithSpeedAtDistanceFrom(const double distance, const Point &pointStart, size_t &previousClosestIndex, const size_t minIndex=0, const size_t maxIndex=std::numeric_limits<size_t>::max()) const;
   Point pointWithSpeedAtBackwardDistanceFrom(const double distance, const Point &pointStart, size_t &previousClosestIndex) const;
 
   virtual void pop() override {
