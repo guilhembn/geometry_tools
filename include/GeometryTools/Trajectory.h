@@ -59,6 +59,7 @@ class Path {
   virtual void pop() { points_.pop_front(); }
   const PointOriented at(size_t i) const;
   size_t size() const { return points_.size(); }
+  const PointOriented last() const {return points_.back();}
 
   Trajectory computeSpeeds(const double maxLinearSpeed, const double maxRotationalSpeed, const double maxCentripetalAcceleration, const double maxLinearAcceleration) const;
 
