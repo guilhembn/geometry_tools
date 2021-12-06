@@ -48,7 +48,6 @@ write_basic_package_version_file(
 
 install(EXPORT GeometryToolsTargets
         FILE GeometryToolsTargets.cmake
-        NAMESPACE GeometryTools::
         DESTINATION lib/cmake/GeometryTools
 )
 
