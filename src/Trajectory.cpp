@@ -12,14 +12,16 @@ Path::Path(const std::vector<PointOriented> &points) {
   }
 }
 
-Path Path::lissajouPath(const PointOriented &robotPose, const size_t steps) {
+Path Path::lissajouPath(const PointOriented &robotPose, const size_t steps, const double sizeX, const double sizeY) {
   double theta = 0.;
   double dtheta = 2 * M_PI / steps;
+  const double halfSizeX = sizeX / 2.;
+  const double halfSizeY = sizeY / 2.;
   std::vector<PointOriented> pts;
   pts.reserve(steps);
   for (size_t i = 0; i < steps; i++) {
     theta = i * dtheta;
-    pts.emplace_back(robotPose.x() + 500 * std::sin(theta), robotPose.y() + 500 * std::sin(2 * theta), 0.0);
+    pts.emplace_back(robotPose.x() + halfSizeX * std::sin(theta), robotPose.y() + halfSizeY * std::sin(2 * theta), 0.0);
   }
   return Path(pts);
 }

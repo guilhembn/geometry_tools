@@ -23,7 +23,7 @@ class Path {
  public:
   Path();
   Path(const std::vector<PointOriented> &points);
-  static Path lissajouPath(const PointOriented &robotPose, const size_t steps);
+  static Path lissajouPath(const PointOriented &robotPose, const size_t steps, const double sizeX, const double sizeY);
 
   /**
    * @brief Finds the closest point on the trajectory to the point given. The returned point is the linear interpolation of factor tOut
