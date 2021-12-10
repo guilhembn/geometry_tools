@@ -24,7 +24,8 @@ class Path {
   Path();
   Path(const std::vector<PointOriented> &points);
   static Path lissajouPath(const PointOriented &robotPose, const size_t steps, const double sizeX, const double sizeY);
-
+  static Path cubicBezier(const PointOriented& startPoint, const Point& controlPoint1, const Point& controlPoint2, const PointOriented& endPoint, const size_t steps);
+  static Path fromSVG(const std::string& svgPath, const size_t steps);
   /**
    * @brief Finds the closest point on the trajectory to the point given. The returned point is the linear interpolation of factor tOut
    * between the points at closestPrevIndex and closestPrevIndex + 1.

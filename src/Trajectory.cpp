@@ -1,6 +1,9 @@
 #include "GeometryTools/Trajectory.h"
 
 #include <limits>
+#include <fstream>
+#include <sstream>
+#include <unordered_set>
 
 namespace rd {
 
@@ -24,6 +27,103 @@ Path Path::lissajouPath(const PointOriented &robotPose, const size_t steps, cons
     pts.emplace_back(robotPose.x() + halfSizeX * std::sin(theta), robotPose.y() + halfSizeY * std::sin(2 * theta), 0.0);
   }
   return Path(pts);
+}
+
+Path Path::cubicBezier(const PointOriented& startPoint, const Point& controlPoint1, const Point& controlPoint2, const PointOriented& endPoint, const size_t steps){
+  double t = 0.;
+  double dt = 1. / steps;
+  std::vector<PointOriented> pts;
+  pts.reserve(steps);
+  const Point& sp = static_cast<Point>(startPoint);
+  const Point& ep = static_cast<Point>(endPoint);
+  for (size_t i = 0; i < steps; i++){
+    t = dt * i;
+    pts.emplace_back(sp * std::pow((1-t), 3) + controlPoint1 * 3 * t * std::pow((1-t), 2) + controlPoint2 * 3 * std::pow(t, 2) * (1-t) + ep * std::pow(t, 3), 0.);
+  }
+  return Path(pts);
+}
+
+Path Path::fromSVG(const std::string& svgPath, const size_t steps){
+  std::ifstream file;
+  file.open(svgPath);
+  std::string fullLine;
+  Path toRet;
+  if (!file.is_open()){
+    throw std::runtime_error("Cannot open file");
+  }
+  std::string line;
+  while (std::getline(file, line)){
+    if (line.find("<path") != std::string::npos){
+      while (line.find("d=\"") == std::string::npos){
+        if (!std::getline(file, line)){
+          throw std::runtime_error("Cannot find 'd' attribute in 'path' tag.");
+        }
+      }
+      if (line.find("\"") != line.rfind("\"")){
+        fullLine = line.substr(line.find("\"")+1, line.rfind("\"") - line.find("\""));
+      }else{
+        fullLine = line.substr(line.find("\"")+1);
+        std::getline(file, line);
+        while (line.find("\"") == std::string::npos){
+          fullLine += line;
+          if (!std::getline(file, line)){
+            throw std::runtime_error("Cannot find '\"' end delimiter to 'd' attribute");
+          }
+        }
+        fullLine += line.substr(0, line.find("\""));
+        break;
+      }
+    }
+  }
+  file.close();
+  if (fullLine == ""){
+    return Path();
+  }
+  std::vector<std::string> tokens;
+  std::stringstream ss(fullLine); // Turn the string into a stream. 
+  std::string tok;
+  while (ss >> tok){
+    tokens.push_back(tok);
+  }
+  std::string cmd = "";
+  const std::unordered_set<std::string> cmds({"M", "m", "c", "C", "z"}); 
+  std::vector<Point> beziersPoints;
+  Point currentPt;
+  for (const std::string& token: tokens){
+    if (token.size() == 1){
+      cmd = token;
+      if (cmd == "z"){
+        toRet += Path({toRet.at(0)});
+      }
+    }else{
+      if (token.find(",") != token.size()){
+        std::string xStr = token.substr(0, token.find(","));
+        std::string yStr = token.substr(token.find(",") + 1);
+        double x = atof(xStr.c_str());
+        double y = atof(yStr.c_str());
+        Point pt;
+        if (cmd == "m" || cmd == "c"){
+          pt = Point(x, y) + currentPt;
+        }else{
+          pt = Point(x, y);
+        }
+        if (cmd == "m" || cmd == "M"){
+          currentPt = pt;
+        }else if (cmd == "c" || cmd == "C"){
+          if (beziersPoints.size() == 0){
+            beziersPoints.push_back(currentPt);
+          }
+          beziersPoints.push_back(pt);
+          if (beziersPoints.size() == 4){
+            toRet += cubicBezier({beziersPoints.at(0), 0}, beziersPoints.at(1), beziersPoints.at(2), {beziersPoints.at(3), 0}, steps);
+            beziersPoints.clear();
+            currentPt = pt;
+          }
+        }
+      }
+    }
+  }
+  return toRet;
 }
 
 Point Path::pointClosestTo(const Point &point, double &tOut, size_t &closestPrevIndex) const {
