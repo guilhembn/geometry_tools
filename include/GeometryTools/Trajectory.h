@@ -60,6 +60,8 @@ class Path {
   const PointOriented at(size_t i) const;
   size_t size() const { return points_.size(); }
   const PointOriented last() const {return points_.back();}
+  virtual Path &operator+=(const Path &rhs);
+  virtual Path operator+(const Path &rhs) const;
 
   Trajectory computeSpeeds(const double maxLinearSpeed, const double maxRotationalSpeed, const double maxCentripetalAcceleration, const double maxLinearAcceleration) const;
 

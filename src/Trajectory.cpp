@@ -292,4 +292,14 @@ Point Trajectory::pointWithSpeedAtBackwardDistanceFrom(const double distance, co
   previousClosestIndex = browsingTraj;
   return goal;
 }
+
+Path &Path::operator+=(const Path &rhs){
+  points_.insert(points_.end(), rhs.points_.begin(), rhs.points_.end());
+  return *this;
+}
+Path Path::operator+(const Path &rhs) const{
+  Path tmp(*this);
+  tmp += rhs;
+  return tmp;
+}
 }  // namespace rd
