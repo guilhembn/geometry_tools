@@ -9,7 +9,7 @@ if(CROSSCOMPILE_ARM)
     else()
         set (LINUX_ARM_TOOLCHAIN_PATH /usr/lib/ccache)
     endif()
-    set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/arm_build.cmake)
+    set(CMAKE_TOOLCHAIN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/cmake/arm_build.cmake)
 endif()
 
 project(GeometryTools VERSION 0.1.0)
