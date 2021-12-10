@@ -114,13 +114,15 @@ Point &Point::operator*=(const double s) {
   return *this;
 }
 
-Point Point::operator*(const double s) {
+Point Point::operator*(const double s) const {
   Point tmp(*this);
   tmp *= s;
   return tmp;
 }
 
 PointOriented::PointOriented(double x, double y, double theta) : Point(x, y), a_(theta) {}
+
+PointOriented::PointOriented(const Point& point, double theta) : Point(point), a_(theta) {}
 
 PointOriented &PointOriented::operator+=(const PointOriented &rhs) {
   p_ += rhs.p_;

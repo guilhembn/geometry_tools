@@ -73,8 +73,8 @@ class Point {
   virtual Point operator-() const;
   virtual Point &operator-=(const Point &rhs);
   virtual Point operator-(const Point &rhs) const;
-  virtual Point &operator*=(const double s);
-  virtual Point operator*(const double s);
+  Point &operator*=(const double s);
+  Point operator*(const double s) const;
   inline bool operator==(const Point &rhs) const { return p_ == rhs.p_; }
 
   inline friend std::ostream &operator<<(std::ostream &os, const Point &pt) {
@@ -91,6 +91,7 @@ class PointOriented : public Point {
   PointOriented() = default;
   virtual ~PointOriented() = default;
   PointOriented(double x, double y, double theta);
+  PointOriented(const Point& point, double theta);
   const Angle &theta() const { return a_; };
 
   inline friend std::ostream &operator<<(std::ostream &os, const PointOriented &pt) {
@@ -101,8 +102,8 @@ class PointOriented : public Point {
   virtual PointOriented operator+(const PointOriented &rhs) const;
   virtual PointOriented &operator-=(const PointOriented &rhs);
   virtual PointOriented operator-(const PointOriented &rhs) const;
-  virtual PointOriented &operator*=(const double s);
-  virtual PointOriented operator*(const double rhs) const;
+  PointOriented &operator*=(const double s);
+  PointOriented operator*(const double rhs) const;
 
  private:
   Angle a_;
