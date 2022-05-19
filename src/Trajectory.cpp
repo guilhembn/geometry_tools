@@ -391,7 +391,7 @@ namespace rd
   {
     double distMin = std::numeric_limits<double>::max();
     double tMin = 0.;
-    size_t iMin = -1;
+    size_t iMin = 0;
     Point pointMin;
     for (size_t i = minIndex; i < std::min(maxIndex, size() - 2); i++)
     {
@@ -417,8 +417,8 @@ namespace rd
 
   Point Trajectory::pointWithSpeedAtDistanceFrom(const double distance, const Point &pointStart, size_t &previousClosestIndex, const size_t minIndex, const size_t maxIndex) const
   {
-    double t;
-    size_t previousIndex;
+    double t = 0.;
+    size_t previousIndex = 0;
     Point proj = pointWithSpeedClosestTo(pointStart, t, previousIndex, minIndex, maxIndex);
 
     double distanceLeft = distance;
@@ -426,7 +426,7 @@ namespace rd
     size_t browsingTraj = previousIndex;
     while (distanceLeft > pathLen)
     { // while the distance left is greater than the length of a full segment
-      if (speeds_.at(browsingTraj + 1) == 0.0)
+      if (speeds_.at(browsingTraj + 1) == 0.0 || points_.size() == browsingTraj + 2)
       {
         // If the robot must stop on this point, do not explore the rest, manage to get it there
         t = 0.;
