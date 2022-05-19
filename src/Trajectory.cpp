@@ -344,6 +344,7 @@ namespace rd
   Trajectory Path::computeSpeeds(const double maxLinearSpeed, const double, const double, const double) const
   {
     std::vector<double> speeds(points_.size(), maxLinearSpeed);
+    speeds.at(speeds.size() - 1) = 0.;
     if (points_.size() < 2)
     {
       return Trajectory(*this, speeds);
