@@ -42,11 +42,13 @@ namespace rd
     pts.reserve(steps);
     const Point &sp = static_cast<Point>(startPoint);
     const Point &ep = static_cast<Point>(endPoint);
-    for (size_t i = 0; i < steps; i++)
+    for (size_t i = 0; i < steps - 1; i++)
     {
       t = dt * i;
       pts.emplace_back(sp * std::pow((1 - t), 3) + controlPoint1 * 3 * t * std::pow((1 - t), 2) + controlPoint2 * 3 * std::pow(t, 2) * (1 - t) + ep * std::pow(t, 3), 0.);
     }
+    t = dt * steps;
+    pts.emplace_back(sp * std::pow((1 - t), 3) + controlPoint1 * 3 * t * std::pow((1 - t), 2) + controlPoint2 * 3 * std::pow(t, 2) * (1 - t) + ep * std::pow(t, 3), endPoint.theta().value());
     return Path(pts);
   }
 
